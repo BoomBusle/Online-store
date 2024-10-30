@@ -1,0 +1,24 @@
+{
+  "name": "online_store",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.6.0",
+    "@vueuse/core": "^11.1.0",
+    "firebase": "^10.14.1",
+    "npm-git-install": "^0.3.0",
+    "vue": "^3.4.29",
+    "vue-router": "^4.0.13"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.5",
+    "sass-embedded": "^1.79.3",
+    "vite": "^5.3.1"
+  }
+}

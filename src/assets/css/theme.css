@@ -1,0 +1,20 @@
+[data-theme='dark'] {
+	--color-background-primary: #333;
+	--color-text-primary: #fff;
+	--color-border: #444;
+	--color-border-dark: #3a3a3a;
+	--color-accent: #ea8c00;
+	--color-accent-dark: #c47602;
+
+  }
+  
+  [data-theme='light'] {
+	--color-background-primary: #fff;
+	--color-text-primary: #000;
+	--color-border: #ccc;
+	--color-border-dark: #929292;
+	--color-accent: #3fd121;
+	--color-accent-dark: #36b11e;
+
+  }
+  
