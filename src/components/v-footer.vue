@@ -3,7 +3,7 @@
       <div class="footer-section">
         <h3>Contact Us</h3>
         <ul class="contact-list">
-          <li><i class="fas fa-envelope"></i> info@company.com</li>
+          <li><i class="fas fa-envelope"></i> info123@company.com</li>
           <li><i class="fas fa-phone-alt"></i> +38 (099) 123-45-67</li>
           <li><i class="fas fa-map-marker-alt"></i> Kyiv, Ukraine</li>
         </ul>

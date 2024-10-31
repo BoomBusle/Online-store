@@ -9,7 +9,10 @@
         <p class="description">{{ product.descr }}</p>
         <div class="price-section">
           <p class="price">{{ product.price }} $</p>
-          <button class="buy-btn" @click="buyProduct">Buy Now</button>
+          <p class="key-count">Available keys: {{ keyCount }}</p>
+          <button class="buy-btn" :disabled="keyCount === 0" @click="buyProduct">
+            {{ keyCount === 0 ? 'Out of Stock' : 'Buy Now' }}
+          </button>
         </div>
       </div>
     </div>
@@ -22,13 +25,14 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import { doc, getDoc, addDoc, collection } from 'firebase/firestore';
+import { doc, getDoc, addDoc, collection, getDocs, query, where } from 'firebase/firestore';
 import { db, auth } from '../firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 
 const route = useRoute();
 const product = ref(null);
 const user = ref(null);
+const keyCount = ref(0);
 
 onMounted(async () => {
   const productId = route.params.id;
@@ -37,7 +41,8 @@ onMounted(async () => {
   try {
     const productSnap = await getDoc(productRef);
     if (productSnap.exists()) {
-      product.value = productSnap.data();
+      product.value = { id: productId, ...productSnap.data() }; 
+      await fetchKeyCount(productId);
     } else {
       console.log("Product not found!");
     }
@@ -50,19 +55,37 @@ onMounted(async () => {
   });
 });
 
+
+const fetchKeyCount = async (productId) => {
+  try {
+    const keysRef = collection(db, 'keys');
+    const keysQuery = query(keysRef, where('productId', '==', productId));
+    const keysSnapshot = await getDocs(keysQuery);
+    keyCount.value = keysSnapshot.size;
+    console.log(`Available keys for product ${productId}: ${keyCount.value}`);
+  } catch (error) {
+    console.error("Error fetching key count:", error);
+  }
+};
+
 const buyProduct = async () => {
   if (user.value) {
-    const cartRef = collection(db, `users/${user.value.uid}/cart`);
-    try {
-      await addDoc(cartRef, {
-        productId:product.value.id,
-        name: product.value.name,
-        price: product.value.price,
-        image: product.value.image,
-        descr: product.value.descr
-      });
-    } catch (error) {
-      console.error("Error adding to cart:", error);
+    if (keyCount.value > 0) {
+      const cartRef = collection(db, `users/${user.value.uid}/cart`);
+      try {
+        await addDoc(cartRef, {
+          productId: product.value.id,
+          name: product.value.name,
+          price: product.value.price,
+          image: product.value.image,
+          descr: product.value.descr,
+        });
+        alert("Product added to cart successfully!");
+      } catch (error) {
+        console.error("Error adding to cart:", error);
+      }
+    } else {
+      alert("This product is out of stock.");
     }
   } else {
     alert('Please log in to buy products.');
@@ -134,6 +157,11 @@ h1 {
   justify-content: space-between;
 }
 
+.key-count {
+  font-size: 16px;
+  color: var(--color-text-primary);
+}
+
 .price {
   font-size: 24px;
   font-weight: bold;
@@ -155,7 +183,8 @@ h1 {
   background-color: var(--color-accent-dark);
 }
 
-.buy-btn:active {
-  transform: scale(0.98);
+.buy-btn:disabled {
+  background-color: gray;
+  cursor: not-allowed;
 }
 </style>
