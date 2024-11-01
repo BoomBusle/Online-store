@@ -72,7 +72,6 @@ onMounted(async () => {
   const genresSnapshot = await getDocs(collection(db, 'genres'));
   genres.value = genresSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   
-  // Ініціалізуємо відфільтровані продукти всіма продуктами до застосування фільтра
   filteredProducts.value = products.value;
 });
 
@@ -107,8 +106,7 @@ const nextPage = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 120vh;
-  max-height: 100%;
+  min-height: 100%;
   padding: 20px;
   background-color: var(--color-background-primary);
 
@@ -118,6 +116,11 @@ const nextPage = () => {
     max-width: 80vw;
     margin: 20px 0;
     height: 100%;
+    @media (max-width: 768px) {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
     .filters {
       width: 20%;
       background-color: var(--color-background-primary);
@@ -126,7 +129,10 @@ const nextPage = () => {
       border-radius: 5px;
       border: 1px solid var(--color-border);
       height: 30%;
-
+      @media (max-width: 768px) {
+        width: 70vw;
+        padding: 5vw;
+      }
       h3 {
         color: var(--color-text-primary);
         margin-bottom: 1vw;
@@ -213,6 +219,11 @@ const nextPage = () => {
       grid-template-columns: repeat(3, 1fr);
       gap: 15px;
       width: 80%;
+      @media (max-width: 768px) {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
     }
   }
 

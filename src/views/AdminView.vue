@@ -240,8 +240,8 @@ const deleteKey = async (id) => {
 }
 
 button {
-  margin: 0 10px;
-  padding: 10px 15px;
+  margin: 1vw;
+  padding: 1vw;
   border: none;
   background-color: var(--color-accent);
   cursor: pointer;
@@ -277,6 +277,10 @@ li{
   align-items: center;
   justify-content: center;
   flex-direction: row;
+  padding: 2vw;
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
 }
 input {
   width: 97.5%;
@@ -285,6 +289,7 @@ input {
   border: 1px solid var(--color-border);
   border-radius: 5px;
   font-size: 16px;
+  padding: 1vw;
   background-color: var(--color-background-primary);
   color: var(--color-text-primary);
 }

@@ -1,34 +1,35 @@
 <template>
   <div class="header">
     <div class="left-section">
-      <router-link to="/" class="nav-link">Home</router-link>
-      <router-link to="/catalog" class="nav-link">Catalog</router-link>
-      <div class="search">
-  <input
-    type="text"
-    placeholder="Search product..."
-    v-model="searchQuery"
-    @input="showSearchResults = true"
-  />
-  <button @click="search">
-    <i class="fas fa-search search-icon"></i>
-  </button>
-  <div v-if="showSearchResults && filteredProducts.length > 0" class="search-results">
-    <div
-      v-for="product in filteredProducts"
-      :key="product.id"
-      @click="goToProduct(product.id)"
-      class="search-result-item"
-    >
-      <img :src="product.image" alt="Product Image" />
-      <div class="product-info">
-        <h3>{{ product.name }}</h3>
-        <p>{{ product.price }} $</p>
+      <button @click="toggleMenu" class="burger-menu">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div v-show="isMenuOpen || isLargeScreen" class="menu-items">
+        <router-link to="/" class="nav-link">Home</router-link>
+        <router-link to="/catalog" class="nav-link">Catalog</router-link>
       </div>
-    </div>
-  </div>
-</div>
-
+      <transition name="slide-down">
+        <div v-if="isMenuOpen" class="modal-menu">
+          <router-link to="/" class="nav-link" @click="toggleMenu">Home</router-link>
+          <router-link to="/catalog" class="nav-link" @click="toggleMenu">Catalog</router-link>
+        </div>
+      </transition>
+      <div class="search">
+        <input type="text" placeholder="Search product..." v-model="searchQuery" @input="showSearchResults = true" />
+        <button @click="search">
+          <i class="fas fa-search search-icon"></i>
+        </button>
+        <div v-if="showSearchResults && filteredProducts.length > 0" class="search-results">
+          <div v-for="product in filteredProducts" :key="product.id" @click="goToProduct(product.id)"
+            class="search-result-item">
+            <img :src="product.image" alt="Product Image" />
+            <div class="product-info">
+              <h3>{{ product.name }}</h3>
+              <p>{{ product.price }} $</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="right-section">
@@ -68,7 +69,7 @@
         </div>
         <div class="cart-summary">
           <p>Total: {{ totalPrice }} $</p>
-          <button class="checkout-btn" @click="goToOrder" >Order</button>
+          <button class="checkout-btn" @click="goToOrder">Order</button>
         </div>
       </div>
       <div class="cart-summary" v-else>
@@ -105,6 +106,21 @@ const showRegisterModal = ref(false);
 const searchQuery = ref('');
 const showSearchResults = ref(false);
 const products = ref([]);
+
+const isMenuOpen = ref(false);
+const isLargeScreen = ref(window.innerWidth > 768);
+
+const toggleMenu = () => {
+  isMenuOpen.value = !isMenuOpen.value;
+};
+
+const updateScreenSize = () => {
+  isLargeScreen.value = window.innerWidth > 768;
+  if (isLargeScreen.value) isMenuOpen.value = false;
+};
+
+window.addEventListener("resize", updateScreenSize);
+onUnmounted(() => window.removeEventListener("resize", updateScreenSize));
 
 const fetchProducts = async () => {
   const productsRef = collection(db, 'products');
@@ -212,7 +228,7 @@ const goToUserProfile = () => {
 };
 
 const goToOrder = () => {
-  localStorage.setItem('cartItems', JSON.stringify(cartItems.value)); 
+  localStorage.setItem('cartItems', JSON.stringify(cartItems.value));
   router.push({ name: 'order' });
 };
 
@@ -232,17 +248,88 @@ onUnmounted(() => {
 
 <style lang="scss" scoped>
 @import "@/assets/sass/_variables.sass";
+
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px;
-}
+  padding: 1rem;
 
+  .burger-menu {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 24px;
+    i{
+      color: var(--color-accent);
+    }
+  }
+
+  .menu-items {
+    display: flex;
+  }
+
+  .modal-menu {
+    position: absolute;
+    left: 0;
+    top: 5%;
+    right: 0;
+    background:  var(--color-background-primary);
+    padding: 1rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 50vw;
+    z-index: 1000;
+
+    .nav-link {
+      color: var(--color-text-primary);
+      text-decoration: none;
+      font-size: 18px;
+
+      &:hover {
+        color: var(--color-background-secondary);
+      }
+    }
+  }
+
+  .slide-down-enter-active,
+  .slide-down-leave-active {
+    transition: all 0.3s ease;
+  }
+
+  .slide-down-enter-from,
+  .slide-down-leave-to {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+
+  .slide-down-enter-to,
+  .slide-down-leave-from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  @media (max-width: 768px) {
+    .burger-menu {
+      display: inline;
+    }
+
+    .menu-items {
+      display: none;
+      flex-direction: column;
+    }
+
+    .menu-items[style*="display: flex"] {
+      display: flex;
+    }
+  }
+}
 .search {
   position: relative;
 }
-
 .search-results {
   position: absolute;
   top: 100%;
@@ -295,6 +382,7 @@ onUnmounted(() => {
   justify-content: space-between;
   padding: 0 15px;
 }
+
 .cart-modal {
   position: fixed;
   top: 5%;
@@ -305,7 +393,9 @@ onUnmounted(() => {
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   padding: 20px;
   z-index: 1000;
-
+  @media (max-width: 768px) {
+      width: 200px;
+  }
   h2 {
     margin-bottom: 20px;
     font-size: 24px;
@@ -322,7 +412,9 @@ onUnmounted(() => {
     display: flex;
     align-items: center;
     margin-bottom: 15px;
-
+    @media (max-width: 768px) {
+      flex-direction: column;
+    }
     .cart-item-img {
       width: 80px;
       height: 80px;
@@ -377,6 +469,7 @@ onUnmounted(() => {
     }
   }
 }
+
 .nav-link {
   color: var(--color-text-primary);
   text-decoration: none;
@@ -421,6 +514,11 @@ onUnmounted(() => {
     }
   }
 }
+@media (max-width: 768px) {
+    .search {
+      display: none;
+    }
+  }
 
 .right-section {
   display: flex;
@@ -451,7 +549,7 @@ onUnmounted(() => {
       color: var(--color-accent-dark);
       align-items: center;
     }
-    
+
     .cart-icon,
     .user-icon {
       font-size: 18px;
@@ -463,6 +561,11 @@ onUnmounted(() => {
       width: 32px;
       height: 32px;
     }
+    @media (max-width: 768px) {
+    .user-profile {
+      display: none;
+    }
+  }
   }
 
   .switcher {
@@ -485,7 +588,8 @@ onUnmounted(() => {
       left: 0;
       right: 0;
       bottom: 0;
-      background-color: var(--color-accent);;
+      background-color: var(--color-accent);
+      ;
       transition: 0.4s;
       border-radius: 34px;
 

@@ -96,36 +96,41 @@ const buyProduct = async () => {
 <style scoped>
 .product-wrapper {
   display: flex;
-  height: 65vh;
+  height: auto;
   align-items: center;
-  justify-content: space-between;
-  padding: 40px;
+  justify-content: center;
+  padding: 5vw;
   background-color: var(--color-background-primary);
-  margin: 0 auto;
-  gap: 30px;
+  gap: 3vw;
+  flex-direction: column;
+  max-width: 100%;
 }
+
 .product-details {
   display: flex;
   align-items: center;
   justify-content: space-evenly;
-  padding: 40px;
+  padding: 4vw;
   background-color: var(--color-border);
   border-radius: 10px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-  width: 60vw;
-  margin: 0 auto;
-  gap: 30px;
+  width: 100%;
+  max-width: 1000px;
+  gap: 3vw;
+  flex-wrap: wrap;
 }
+
 .image-section {
   flex: 1;
-  text-align: start;
+  text-align: center;
 }
 
 .product-img {
-  width: 400px;
-  height: 400px;
+  width: 80%;
+  max-width: 300px;
+  height: auto;
   object-fit: cover;
-  border-radius: 20px;
+  border-radius: 10px;
   transition: transform 0.3s ease-in-out;
 }
 
@@ -134,36 +139,40 @@ const buyProduct = async () => {
 }
 
 h1 {
-  font-size: 32px;
+  font-size: 2rem;
   color: var(--color-text-primary);
-  margin-bottom: 20px;
+  margin-bottom: 1vw;
 }
 
 .info-section {
   flex: 1;
-  padding-left: 20px;
+  padding-left: 2vw;
+  text-align: center;
 }
 
 .description {
-  font-size: 18px;
+  text-align: start;
+  font-size: 1rem;
   color: var(--color-text-primary);
-  margin-bottom: 20px;
+  margin-bottom: 2vw;
 }
 
 .price-section {
   display: flex;
   align-items: center;
-  margin-top: 20px;
+  margin-top: 2vw;
   justify-content: space-between;
+  gap: 2vw;
+  flex-wrap: wrap;
 }
 
 .key-count {
-  font-size: 16px;
+  font-size: 1rem;
   color: var(--color-text-primary);
 }
 
 .price {
-  font-size: 24px;
+  font-size: 1.5rem;
   font-weight: bold;
   color: var(--color-accent);
 }
@@ -171,10 +180,10 @@ h1 {
 .buy-btn {
   background-color: var(--color-accent);
   color: white;
-  padding: 12px 24px;
+  padding: 10px 20px;
   border: none;
-  border-radius: 50px;
-  font-size: 16px;
+  border-radius: 20px;
+  font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.3s ease-in-out;
 }
@@ -187,4 +196,43 @@ h1 {
   background-color: gray;
   cursor: not-allowed;
 }
+
+@media (max-width: 768px) {
+  .product-wrapper {
+    padding: 5vw;
+  }
+
+  .product-details {
+    flex-direction: column;
+    width: 90%;
+    padding: 4vw;
+  }
+
+  .image-section {
+    margin-bottom: 2vw;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  .description {
+    font-size: 0.9rem;
+  }
+
+  .price-section {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .price {
+    font-size: 1.25rem;
+  }
+
+  .buy-btn {
+    font-size: 0.9rem;
+    padding: 8px 16px;
+  }
+}
+
 </style>

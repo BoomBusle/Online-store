@@ -25,8 +25,8 @@
       </div>
   
       <div class="footer-section">
-        <h3>Subscribe to Newsletter</h3>
         <form class="subscribe-form">
+          <h3>Subscribe to Newsletter</h3>
           <input type="email" placeholder="Your email" class="email-input" />
           <button type="submit" class="subscribe-btn">Subscribe</button>
         </form>
@@ -39,69 +39,60 @@
   
   <style lang="scss" scoped>
   footer {
-    display: flex;
-    justify-content: space-evenly;
-    padding: 40px;
-    border-top: 1px solid var(--color-border);
-    background-color: var(--color-background-primary);
-    color: var(--color-accent);
-    text-align: center;
-  }
-  
+  display: flex;
+  justify-content: space-evenly;
+  padding: 40px;
+  border-top: 1px solid var(--color-border);
+  background-color: var(--color-background-primary);
+  color: var(--color-accent);
+  text-align: center;
+
   .footer-section {
     flex: 1;
     margin: 0 20px;
   }
-  
+
   h3 {
     font-size: 20px;
     margin-bottom: 15px;
     color: var(--color-accent);
   }
-  
+
   .contact-list {
     list-style-type: none;
     padding: 0;
   }
-  
+
   .contact-list li {
     margin-bottom: 10px;
     font-size: 16px;
   }
-  
-  .contact-list i {
-    margin-right: 10px;
-  }
-  
+
   .social-icons {
     display: flex;
     justify-content: center;
     gap: 20px;
   }
-  
+
   .icon-link i {
     font-size: 30px;
     color: var(--color-accent);
     transition: transform 0.3s ease;
   }
-  
-  .icon-link:hover i {
-    transform: scale(1.2);
-  }
-  
+
   .subscribe-form {
     display: flex;
     justify-content: center;
     gap: 10px;
   }
-  
+
   .email-input {
     padding: 10px;
     border: 2px solid var(--color-accent);
     border-radius: 5px;
     width: 200px;
   }
-  
+
   .subscribe-btn {
     background-color: var(--color-accent);
     color: white;
@@ -111,9 +102,25 @@
     cursor: pointer;
     transition: background-color 0.3s ease;
   }
-  
-  .subscribe-btn:hover {
-    background-color: var(--color-accent-dark);
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    padding: 20px;
+
+    .footer-section {
+      margin: 15px 0;
+    }
+
+    .email-input {
+      width: 100%; 
+    }
+
+    .subscribe-form {
+      display: none;
+    }
+  }
+
 }
+
   </style>
   

@@ -10,6 +10,7 @@
         </div>
       </div>
 
+
       <div class="game">
         <div class="cards-wrapper">
           <div v-for="product in filteredNewGames" :key="product.id" class="genre-card"
@@ -17,6 +18,7 @@
             <img :src="product.image" alt="Product Image" class="card-img" />
             {{ product.name }}
           </div>
+
         </div>
       </div>
     </div>
@@ -51,11 +53,11 @@
 import { ref, computed, onMounted } from 'vue';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/firebase';
-import { useRouter } from 'vue-router'; 
+import { useRouter } from 'vue-router';
 import vCard from '@/components/v-card.vue';
 
 const products = ref([]);
-const selectedGenre = ref('Puzzle');
+const selectedGenre = ref('Shooter');
 const genres = ref([]);
 
 const router = useRouter();
@@ -65,12 +67,11 @@ const loading = ref(true);
 
 onMounted(async () => {
   const productSnapshot = await getDocs(collection(db, 'products'));
-  products.value = productSnapshot.docs.map(doc => doc.data());
+  products.value = productSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
   const genreSnapshot = await getDocs(collection(db, 'genres'));
   genres.value = genreSnapshot.docs.map(doc => doc.data().name);
   fetchAchievements();
-
 });
 
 const fetchAchievements = async () => {
@@ -90,10 +91,10 @@ const fetchAchievements = async () => {
     loading.value = false;
   }
 };
-
 const goToProductPage = (id) => {
   router.push({ name: 'ProductDetails', params: { id: id } });
 };
+
 
 const filteredNewGames = computed(() => {
   return products.value
@@ -128,6 +129,10 @@ const filteredProducts = computed(() => {
       width: 20vw;
       height: 50vh;
       border-radius: 10px;
+
+      @media (max-width: 768px) {
+        width: 30vw;
+      }
 
       .genre-buttons {
         display: flex;
@@ -181,18 +186,26 @@ const filteredProducts = computed(() => {
         width: 100%;
         height: 100%;
 
+        @media (max-width: 768px) {
+          flex-direction: column;
+        }
+
         .genre-card {
           display: flex;
           align-items: center;
           justify-content: center;
           flex-direction: column;
           width: 100%;
-          height: 100%;
+          height: 50%;
           border-radius: 10px;
           color: var(--color-text-primary);
           font-size: 1.5rem;
           text-align: center;
           padding: 1rem;
+
+          @media (max-width: 768px) {
+            width: 90%;
+          }
 
           .card-img {
             margin-bottom: 1vw;
@@ -224,7 +237,15 @@ const filteredProducts = computed(() => {
       padding: 1vw;
       border-radius: 20px;
       background-color: var(--color-border);
+      text-align: center;
       color: var(--color-text-primary);
+
+      @media (max-width: 768px) {
+        margin-right: 60vw;
+        height: 10vh;
+        font-size: 20px;
+        width: 25vw;
+      }
     }
 
     .cards-wrapper {
@@ -263,6 +284,10 @@ const filteredProducts = computed(() => {
       background-color: var(--color-border);
       border-radius: 10px;
 
+      @media (max-width: 768px) {
+        flex-direction: column;
+      }
+
       .attainment-card {
         margin: 2vw;
         display: flex;
@@ -273,6 +298,11 @@ const filteredProducts = computed(() => {
         height: 30vh;
         background-color: var(--color-background-primary);
         border-radius: 10px;
+
+        @media (max-width: 768px) {
+          width: 80vw;
+          height: 30vh;
+        }
       }
     }
   }
@@ -290,6 +320,7 @@ const filteredProducts = computed(() => {
     }
   }
 }
+
 .attainment {
   padding: 5vw 9.2vw 9.2vw 9.2vw;
   display: flex;

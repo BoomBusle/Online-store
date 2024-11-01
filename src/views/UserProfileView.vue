@@ -148,6 +148,9 @@
     justify-content: space-evenly;
     flex-direction: row;
     width: 90vw;
+    @media (max-width: 768px) {
+      flex-direction: column;
+    }
   }
   
   .profile-header {
@@ -173,6 +176,7 @@
     width: 100%;
     max-width: 400px;
     margin-bottom: 20px;
+    
   }
   
   .user-info input {
@@ -181,6 +185,9 @@
     margin-bottom: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    @media (max-width: 768px) {
+      width: 90%;
+    }
   }
   
   button {
