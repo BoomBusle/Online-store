@@ -119,7 +119,7 @@ const filteredProducts = computed(() => {
     align-items: center;
     justify-content: space-evenly;
     flex-direction: row;
-    height: 50vh;
+    min-height: 50vh;
 
     .genre {
       display: flex;
@@ -127,11 +127,12 @@ const filteredProducts = computed(() => {
       justify-content: center;
       background-color: var(--color-border);
       width: 20vw;
-      height: 50vh;
+      min-height: 50vh;
       border-radius: 10px;
 
       @media (max-width: 768px) {
         width: 30vw;
+        height: 60vh;
       }
 
       .genre-buttons {
