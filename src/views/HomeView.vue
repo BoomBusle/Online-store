@@ -121,6 +121,10 @@ const filteredProducts = computed(() => {
     flex-direction: row;
     min-height: 50vh;
 
+    @media (max-width: 768px) {
+      flex-direction: column;
+    }
+
     .genre {
       display: flex;
       align-items: center;
@@ -131,8 +135,10 @@ const filteredProducts = computed(() => {
       border-radius: 10px;
 
       @media (max-width: 768px) {
-        width: 30vw;
-        height: 60vh;
+        border-radius: 0px;
+        width: 98vw;
+        min-height: 5vh;
+        padding: 1vw;
       }
 
       .genre-buttons {
@@ -140,6 +146,15 @@ const filteredProducts = computed(() => {
         flex-direction: column;
         width: 80%;
         height: 90%;
+
+        @media (max-width: 768px) {
+          gap: 2vw;
+          width: 90%;
+          flex-direction: row;
+          overflow-x: auto;
+          white-space: nowrap;
+          scroll-behavior: smooth;
+        }
 
         label {
           padding: 10px 15px;
@@ -179,6 +194,11 @@ const filteredProducts = computed(() => {
       height: 50vh;
       border-radius: 10px;
 
+      @media (max-width: 768px) {
+        border-radius: 0px;
+        width: 100vw;
+      }
+
       .cards-wrapper {
         display: flex;
         align-items: center;
@@ -215,7 +235,9 @@ const filteredProducts = computed(() => {
             object-fit: cover;
             border-radius: 10px;
             transition: transform 0.3s;
-
+            @media (max-width: 768px) {
+              height: 15vh;
+             }
             &:hover {
               transform: scale(1.01);
             }
