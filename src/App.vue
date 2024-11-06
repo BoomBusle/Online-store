@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref} from 'vue';
 import vHeader from './components/v-header.vue';
 import vFooter from './components/v-footer.vue';
 
@@ -17,7 +17,6 @@ import vFooter from './components/v-footer.vue';
     vFooter 
   },
 });
-
 </script>
 
 <style lang="scss" scoped>

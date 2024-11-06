@@ -25,78 +25,60 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import { doc, getDoc, addDoc, collection, getDocs, query, where } from 'firebase/firestore';
-import { db, auth } from '../firebase';
 import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '@/firebase';
+import { useStore } from '@/stores/store';
 
+const store = useStore();
 const route = useRoute();
 const product = ref(null);
-const user = ref(null);
 const keyCount = ref(0);
+const user = ref(null);
 
 onMounted(async () => {
   const productId = route.params.id;
-  const productRef = doc(db, "products", productId);
 
   try {
-    const productSnap = await getDoc(productRef);
-    if (productSnap.exists()) {
-      product.value = { id: productId, ...productSnap.data() }; 
-      await fetchKeyCount(productId);
+    product.value = await store.fetchProduct(productId);
+    if (product.value) {
+      keyCount.value = await store.fetchKeyCount(productId);
     } else {
       console.log("Product not found!");
     }
   } catch (error) {
     console.error("Error loading product:", error);
   }
-  
+
   onAuthStateChanged(auth, (currentUser) => {
     user.value = currentUser;
   });
 });
 
-
-const fetchKeyCount = async (productId) => {
-  try {
-    const keysRef = collection(db, 'keys');
-    const keysQuery = query(keysRef, where('productId', '==', productId));
-    const keysSnapshot = await getDocs(keysQuery);
-    keyCount.value = keysSnapshot.size;
-    console.log(`Available keys for product ${productId}: ${keyCount.value}`);
-  } catch (error) {
-    console.error("Error fetching key count:", error);
-  }
-};
-
 const buyProduct = async () => {
-  if (user.value) {
-    if (keyCount.value > 0) {
-      const cartRef = collection(db, `users/${user.value.uid}/cart`);
-      try {
-        await addDoc(cartRef, {
-          productId: product.value.id,
-          name: product.value.name,
-          price: product.value.price,
-          image: product.value.image,
-          descr: product.value.descr,
-        });
-        alert("Product added to cart successfully!");
-      } catch (error) {
-        console.error("Error adding to cart:", error);
-      }
-    } else {
-      alert("This product is out of stock.");
-    }
-  } else {
+  if (!user.value) {
     alert('Please log in to buy products.');
+    return;
+  }
+
+  if (keyCount.value === 0) {
+    alert("This product is out of stock.");
+    return;
+  }
+
+  try {
+    await store.addToCart(user.value.uid, product.value);
+    alert("Product added to cart successfully!");
+  } catch (error) {
+    console.error("Error adding to cart:", error);
   }
 };
 </script>
 
+
 <style scoped>
 .product-wrapper {
   display: flex;
-  height: auto;
+  min-height: 54vh;
   align-items: center;
   justify-content: center;
   padding: 5vw;

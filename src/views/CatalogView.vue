@@ -48,43 +48,35 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '@/firebase'; 
+import { useStore } from '@/stores/store';
 import vCard from '@/components/v-card.vue';
 
-const products = ref([]);
-const genres = ref([]);
-const filteredProducts = ref([]);
+const store = useStore();
 
 const filters = ref({
   name: '',
   genre: '',
-  minPrice: 0,
-  maxPrice: 1000,  
+  maxPrice: 1000,
 });
 const currentPage = ref(1);
 const itemsPerPage = 9;
+const genres = ref([]);
+const products = ref([]);
 
 onMounted(async () => {
-  const querySnapshot = await getDocs(collection(db, 'products'));
-  products.value = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-  const genresSnapshot = await getDocs(collection(db, 'genres'));
-  genres.value = genresSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-  
-  filteredProducts.value = products.value;
+  genres.value = await store.fetchGenres();
+  products.value = await store.fetchProducts();
 });
 
-const applyFilters = () => {
-  currentPage.value = 1;
-  filteredProducts.value = products.value.filter(product => {
+const filteredProducts = computed(() => {
+  return products.value.filter((product) => {
     const matchesName = product.name.toLowerCase().includes(filters.value.name.toLowerCase());
     const matchesGenre = !filters.value.genre || product.genre === filters.value.genre;
-    const matchesPrice = product.price >= filters.value.minPrice && product.price <= filters.value.maxPrice;
+    const matchesPrice = product.price <= filters.value.maxPrice;
 
     return matchesName && matchesGenre && matchesPrice;
   });
-};
+});
 
 const paginatedProducts = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
@@ -106,7 +98,7 @@ const nextPage = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 100%;
+  min-height: 100vh;
   padding: 20px;
   background-color: var(--color-background-primary);
 

@@ -3,22 +3,19 @@
     <div class="new-game">
       <div class="genre">
         <div class="genre-buttons">
-          <label v-for="genre in genres" :key="genre" :class="{ active: selectedGenre === genre }">
-            <input type="radio" :value="genre" v-model="selectedGenre" class="radio-button" />
-            {{ genre }}
+          <label v-for="genre in genres" :key="genre.name " :class="{ active: selectedGenre === genre.name  }">
+            <input type="radio" :value="genre.name " v-model="selectedGenre" class="radio-button" />
+            {{ genre.name }}
           </label>
         </div>
       </div>
 
-
       <div class="game">
         <div class="cards-wrapper">
-          <div v-for="product in filteredNewGames" :key="product.id" class="genre-card"
-            @click="goToProductPage(product.id)">
+          <div v-for="product in filteredNewGames" :key="product.id" class="genre-card" @click="goToProductPage(product.id)">
             <img :src="product.image" alt="Product Image" class="card-img" />
             {{ product.name }}
           </div>
-
         </div>
       </div>
     </div>
@@ -28,11 +25,11 @@
       <div class="cards-wrapper">
         <div class="moving-cards">
           <vCard v-for="product in filteredProducts" :key="product.id" :product="product" class="large-card" />
-          <vCard v-for="product in filteredProducts" :key="product.id + 'duplicate'" :product="product"
-            class="large-card" />
+          <vCard v-for="product in filteredProducts" :key="product.id + 'duplicate'" :product="product" class="large-card" />
         </div>
       </div>
     </div>
+
     <div class="attainment">
       <div class="attainment-wrapper">
         <template v-if="loading">
@@ -51,50 +48,30 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '@/firebase';
+import { useStore } from '@/stores/store';
 import { useRouter } from 'vue-router';
 import vCard from '@/components/v-card.vue';
 
-const products = ref([]);
-const selectedGenre = ref('Shooter');
-const genres = ref([]);
-
+const store = useStore();
 const router = useRouter();
 
+const products = ref([]);
+const genres = ref([]);
 const achievements = ref([]);
-const loading = ref(true);
+const loading = ref(false);
+const selectedGenre = ref('Shooter');
 
 onMounted(async () => {
-  const productSnapshot = await getDocs(collection(db, 'products'));
-  products.value = productSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-  const genreSnapshot = await getDocs(collection(db, 'genres'));
-  genres.value = genreSnapshot.docs.map(doc => doc.data().name);
-  fetchAchievements();
+  products.value = await store.fetchProducts();
+  genres.value = await store.fetchGenres();
+  loading.value = true;
+  achievements.value = await store.fetchAchievements();
+  loading.value = false;
 });
 
-const fetchAchievements = async () => {
-  try {
-    const salesSnapshot = await getDocs(collection(db, 'orders'));
-    const gamesSnapshot = await getDocs(collection(db, 'products'));
-    const genresSnapshot = await getDocs(collection(db, 'genres'));
-
-    achievements.value = [
-      { title: 'Number of Sales', value: salesSnapshot.size },
-      { title: 'Number of Games on Sale', value: gamesSnapshot.size },
-      { title: 'Number of Genres', value: genresSnapshot.size },
-    ];
-  } catch (error) {
-    console.error('Error fetching achievements:', error);
-  } finally {
-    loading.value = false;
-  }
-};
 const goToProductPage = (id) => {
-  router.push({ name: 'ProductDetails', params: { id: id } });
+  router.push({ name: 'ProductDetails', params: { id } });
 };
-
 
 const filteredNewGames = computed(() => {
   return products.value
@@ -106,6 +83,7 @@ const filteredProducts = computed(() => {
   return products.value.slice(0, 10);
 });
 </script>
+
 
 
 <style lang="scss" scoped>

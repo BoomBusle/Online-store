@@ -3,6 +3,7 @@ import './assets/css/theme.css';
 import '@fortawesome/fontawesome-free/css/all.css';
 
 import { createApp } from 'vue';
+import { createPinia } from 'pinia';
 import App from './App.vue';
 import router from './router';
 
@@ -27,5 +28,6 @@ export const auth = getAuth(firebaseApp);
 const app = createApp(App);
 
 app.use(router);
-
+const pinia = createPinia();
+app.use(pinia);
 app.mount('#app');

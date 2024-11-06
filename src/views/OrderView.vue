@@ -26,11 +26,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted ,computed} from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { db, auth } from '@/firebase';
-import { addDoc, collection, getDocs, deleteDoc, doc, query, where, limit } from 'firebase/firestore';
+import { useStore } from '@/stores/store';
+import { auth } from '@/firebase';
 
+const store = useStore();
 const router = useRouter();
 const cartItems = ref([]);
 
@@ -41,28 +42,6 @@ onMounted(() => {
 
 const totalPrice = computed(() => cartItems.value.reduce((total, item) => total + item.price, 0));
 
-const fetchAndDeleteKey = async (productId) => {
-  const keysRef = collection(db, 'keys');
-  const keyQuery = query(keysRef, where('productId', '==', productId), limit(1));
-
-  try {
-    const keySnapshot = await getDocs(keyQuery);
-
-    if (!keySnapshot.empty) {
-      const keyDoc = keySnapshot.docs[0];
-      const keyData = { id: keyDoc.id, ...keyDoc.data() };
-      await deleteDoc(doc(db, 'keys', keyDoc.id));
-      return keyData;
-    } else {
-      console.warn(`No available keys for product ID ${productId}`);
-      return null;
-    }
-  } catch (error) {
-    console.error(`Error fetching key for product ID ${productId}:`, error);
-    return null;
-  }
-};
-
 const submitOrder = async () => {
   if (auth.currentUser) {
     try {
@@ -70,7 +49,7 @@ const submitOrder = async () => {
       let missingKeys = false;
 
       for (const item of cartItems.value) {
-        const productKey = await fetchAndDeleteKey(item.productId);
+        const productKey = await store.fetchAndDeleteKey(item.productId);
 
         if (productKey && productKey.key) {
           orderedItems.push({
@@ -86,15 +65,9 @@ const submitOrder = async () => {
       }
 
       if (orderedItems.length > 0 && !missingKeys) {
-        const order = {
-          items: orderedItems,
-          userId: auth.currentUser.uid,
-          createdAt: new Date(),
-        };
+        await store.addOrder(auth.currentUser.uid, orderedItems);
 
-        await addDoc(collection(db, 'orders'), order);
-
-        await clearCartFromDatabase();
+        await store.clearCartFromDatabase(auth.currentUser.uid);
         cartItems.value = [];
         localStorage.removeItem('cartItems');
 
@@ -110,22 +83,8 @@ const submitOrder = async () => {
     alert('Please log in to place an order.');
   }
 };
-
-
-const clearCartFromDatabase = async () => {
-  try {
-    const cartCollectionRef = collection(db, 'users', auth.currentUser.uid, 'cart');
-    const cartSnapshot = await getDocs(cartCollectionRef);
-
-    const deletePromises = cartSnapshot.docs.map((doc) => deleteDoc(doc.ref));
-    await Promise.all(deletePromises);
-
-    console.log(`All items removed from user's ${auth.currentUser.uid} cart in the database.`);
-  } catch (error) {
-    console.error('Error clearing cart from database:', error);
-  }
-};
 </script>
+
 
 <style scoped>
 .order-container {
