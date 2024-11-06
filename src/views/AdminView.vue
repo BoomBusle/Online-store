@@ -8,7 +8,6 @@
       <button @click="activeTab = 'keys'" :class="{ active: activeTab === 'keys' }">Product Keys</button>
     </div>
 
-    <!-- Genres Tab -->
     <div v-if="activeTab === 'genres'" class="tab-content">
       <h2>Add New Genre</h2>
       <form @submit.prevent="addGenre">
@@ -26,7 +25,6 @@
       </ul>
     </div>
 
-    <!-- Products Tab -->
     <div v-if="activeTab === 'products'" class="tab-content">
       <h2>Add New Product</h2>
       <form @submit.prevent="addProduct">
@@ -54,7 +52,6 @@
       </ul>
     </div>
 
-    <!-- Keys Tab -->
     <div v-if="activeTab === 'keys'" class="tab-content">
       <h2>Add Product Keys</h2>
       <select v-model="selectedProductId">

@@ -57,7 +57,7 @@
     </div>
 
     <div class="cart-modal" v-if="showCartModal">
-      <h2>Кошик</h2>
+      <h2>Cart</h2>
       <div v-if="cartItems.length > 0" class="cart-items">
         <div v-for="item in cartItems" :key="item.id" class="cart-item">
           <img :src="item.image" alt="Product Image" class="cart-item-img" />
